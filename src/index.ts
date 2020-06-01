@@ -15,11 +15,43 @@ function parseYamlFile(filename: string) {
 const predefinedFunctions = {
   '+': (a: any, b: any) => a + b,
   '-': (a: any, b: any) => a - b,
+  '*': (a: any, b: any) => a * b,
+  '/': (a: any, b: any) => a / b,
+  '**': (a: any, b: any) => a ** b,
+  '%': (a: any, b: any) => a % b,
+  '==': (a: any, b: any) => a == b,
+  '===': (a: any, b: any) => a === b,
+  '!=': (a: any, b: any) => a != b,
+  '!==': (a: any, b: any) => a !== b,
+  '>': (a: any, b: any) => a > b,
+  '<': (a: any, b: any) => a < b,
+  '>=': (a: any, b: any) => a >= b,
+  '<=': (a: any, b: any) => a <= b,
+  '&&': (a: any, b: any) => a && b,
+  '||': (a: any, b: any) => a || b,
+  '!': (a: any) => !a,
+  typeof: (a: any) => typeof a,
+  instanceof: (a: any, b: any) => a instanceof b,
+  '&': (a: any, b: any) => a & b,
+  '|': (a: any, b: any) => a | b,
+  '~': (a: any) => ~a,
+  '^': (a: any, b: any) => a ^ b,
+  '<<': (a: any, b: any) => a << b,
+  '>>': (a: any, b: any) => a >> b,
+  '>>>': (a: any, b: any) => a >>> b,
+};
+
+const applyFunc = (funcName: string, args: any[]) => {
+  const programText = `"use strict";return ${funcName}(...args);`;
+  return new Function('args', programText)(args);
 };
 
 function applyFunction(funcName: string, arg: any[]) {
   if (Object.keys(predefinedFunctions).indexOf(funcName) !== -1) {
     const result = (predefinedFunctions as any)[funcName](...arg);
+    return result;
+  } else {
+    const result = applyFunc(funcName, arg);
     return result;
   }
   return undefined;
