@@ -1,13 +1,53 @@
 import program from 'commander';
-/**
- * 指定されたパスの Yaml ファイルを読み込みます。
- */
+import fs, { appendFileSync } from 'fs';
+import yaml from 'js-yaml';
+import { exec } from 'child_process';
 
-function loadYamlFile(filename: string) {
-  const fs = require('fs');
-  const yaml = require('js-yaml');
-  const yamlText = fs.readFileSync(filename, 'utf8');
+function parseYamlString(yamlText: string) {
   return yaml.safeLoad(yamlText);
+}
+
+function parseYamlFile(filename: string) {
+  const yamlText = fs.readFileSync(filename, 'utf8');
+  return parseYamlString(yamlText);
+}
+
+const predefinedFunctions = {
+  '+': (a: any, b: any) => a + b,
+  '-': (a: any, b: any) => a - b,
+};
+
+function applyFunction(funcName: string, arg: any[]) {
+  if (Object.keys(predefinedFunctions).indexOf(funcName) !== -1) {
+    const result = (predefinedFunctions as any)[funcName](...arg);
+    return result;
+  }
+  return undefined;
+}
+function evalYaml(script: object): any {
+  let result = null;
+  if (Array.isArray(script)) {
+    for (const elem of script) {
+      result = evalYaml(elem);
+    }
+  } else if (typeof script === 'string') {
+    result = script;
+  } else if (typeof script === 'object') {
+    for (const key of Object.keys(script)) {
+      const arg = (script as any)[key];
+      if (Array.isArray(arg)) {
+        result = applyFunction(
+          key,
+          arg.map((elem) => evalYaml(elem))
+        );
+      } else {
+        result = applyFunction(key, [evalYaml(arg)]);
+      }
+    }
+  } else {
+    result = script;
+  }
+  return result;
 }
 
 function main(argv: string[]) {
@@ -18,8 +58,8 @@ function main(argv: string[]) {
     .arguments('[file...]')
     .action(function (files, opts) {
       for (const file of files) {
-        const data = loadYamlFile(file);
-        console.log(data);
+        const data = parseYamlFile(file);
+        console.log(evalYaml(data));
       }
     })
     .on('--help', function () {
@@ -35,7 +75,8 @@ function main(argv: string[]) {
 
   // for -e,--script option
   if (program.script) {
-    console.log(program.script);
+    const result = evalYaml(parseYamlString(program.script));
+    console.log(result);
   } else {
     program.args.length !== 0 || program.help();
   }

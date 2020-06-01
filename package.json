@@ -18,5 +18,8 @@
   },
   "scripts": {
     "start": "ts-node src/index.ts"
+  },
+  "bin": {
+    "yaml-script": "bin/index.js"
   }
 }
