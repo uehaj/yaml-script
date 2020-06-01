@@ -1,17 +1,5 @@
 import program from 'commander';
-import fs, { appendFileSync } from 'fs';
-import yaml from 'js-yaml';
-
-type AST = object;
-
-function parseYamlString(yamlText: string): AST {
-  return yaml.safeLoad(yamlText);
-}
-
-function parseYamlFile(filename: string): AST {
-  const yamlText = fs.readFileSync(filename, 'utf8');
-  return parseYamlString(yamlText);
-}
+import { AST, parseYamlString, parseYamlFile } from './parser';
 
 const predefinedFunctions = {
   '+': (a: any, b: any) => a + b,
