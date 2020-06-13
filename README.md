@@ -1,4 +1,4 @@
-# whats? YAML sript
+# YAML sript
 
 YAML script is a small programming langage whith syntax is based on YAML.
 
