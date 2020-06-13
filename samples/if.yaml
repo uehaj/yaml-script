@@ -1,7 +1,7 @@
 ---
-- ['console.log': ['===': [$if: [true, 1, 2], 1]]]
-- ['console.log': ['===': [$if: [false, 1, 2], 2]]]
-- ['console.log': ['===': [$if: ['>': [1, 2], 1, 2], 2]]]
-- ['console.log': ['===': [$if: ['<': [1, 2], 1, 2], 1]]]
-- [$if: ['<': [1, 2], ['console.log': true]]]
-- [$if: ['>': [1, 2], ['console.log': 'FAILURE'], ['console.log': true]]]
+- ['console.log': ['===': [if: [true, 1, 2], 1]]]
+- ['console.log': ['===': [if: [false, 1, 2], 2]]]
+- ['console.log': ['===': [if: ['>': [1, 2], 1, 2], 2]]]
+- ['console.log': ['===': [if: ['<': [1, 2], 1, 2], 1]]]
+- [if: ['<': [1, 2], ['console.log': true]]]
+- [if: ['>': [1, 2], ['console.log': 'FAILURE'], ['console.log': true]]]
