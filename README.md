@@ -1,6 +1,6 @@
-# YAML sript
+# YAML script
 
-YAML script is a small programming langage whith syntax is based on YAML.
+YAML script is a small programming language with a syntax based on YAML.
 
 Sample code:
 
