@@ -17,13 +17,13 @@ function main(argv: string[]) {
     .option('-v,--verbose', 'verbose output', () => {
       config.verbose = true;
     })
+    .arguments('[file...]')
     .action((fileNames: string) => {
       for (const fileName of fileNames) {
         const program: AST = parseYamlFile(fileName);
         evalYaml(program, env);
       }
     })
-    .arguments('[file...]')
     .on('--help', function () {
       console.log(`
 

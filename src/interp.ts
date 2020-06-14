@@ -77,9 +77,18 @@ export class TopLevelScope extends Scope {
       return evalYaml(elsePart, this);
     }
   }, 3);
+
+  ['while'] = new SpecialForm(([condPart, bodyPart]: AST[]) => {
+    let result = undefined;
+    while (!!evalYaml(condPart, this)) {
+      result = evalYaml(bodyPart, this);
+    }
+    return null;
+  }, 2);
   ['setq'] = new SpecialForm(([varName, exp]: AST[]) => {
-    (this as any)[varName as string] = evalYaml(exp, this);
-    return exp;
+    const value = evalYaml(exp, this);
+    (this as any)[varName as string] = value;
+    return value;
   }, 2);
 }
 
@@ -130,7 +139,7 @@ export function evalYaml(script: AST, env: Scope): AST {
     // 3 ==> 3
     // true === true
     result = script;
-  } else if (typeof script === 'object') {
+  } else if (typeof script === 'object' && script !== null) {
     // {k1:v1, k2:v2} ==> k1(v1), result=k2(v2)
     for (const key of Object.keys(script)) {
       let arg = (script as any)[key];
