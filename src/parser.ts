@@ -1,7 +1,13 @@
 import fs from 'fs';
 import yaml from 'js-yaml';
 
-export type AST = number | string | boolean | { lhs: AST; rhs: AST } | null;
+export type AST =
+  | number
+  | string
+  | boolean
+  | { lhs: AST; rhs: AST }
+  | AST[]
+  | null;
 
 export function parseYamlString(yamlText: string): AST {
   return yaml.safeLoad(yamlText);

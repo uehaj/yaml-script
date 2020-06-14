@@ -1,6 +1,7 @@
 import { AST } from './parser';
 import config from './config';
 
+class YamlScriptError extends Error {}
 class Scope {}
 
 abstract class AbstractFunction {
@@ -41,6 +42,42 @@ class SpecialForm extends PredefinedFunction {
   }
 }
 
+function isASTArrayy(params: any): params is AST[] {
+  if (Array.isArray(params)) {
+    return true;
+  }
+  return false;
+}
+class UserDefinedFunction extends AbstractFunction {
+  body: AST;
+  params: AST[];
+  nArgs: number;
+  constructor(params: AST, body: AST) {
+    super();
+    this.body = body;
+    if (!isASTArrayy(params)) {
+      throw new YamlScriptError();
+    }
+    this.params = params;
+    this.nArgs = params.length;
+  }
+  apply(args: AST[], env: Scope): AST {
+    config.verbose &&
+      console.log(
+        `UserDefinedFunction.apply args=${args} params=${
+          this.params
+        } body=${JSON.stringify(this.body)}`
+      );
+
+    const functionLocalScope = Object.create(env);
+    this.params.forEach((param, idx) => {
+      (functionLocalScope as any)[param as string] = args[idx];
+    });
+
+    return evalYaml(this.body, functionLocalScope);
+  }
+}
+
 export class TopLevelScope extends Scope {
   ['+'] = new Fun2<number, number>((a, b) => a + b);
   ['-'] = new Fun2<number, number>((a, b) => a - b);
@@ -77,7 +114,6 @@ export class TopLevelScope extends Scope {
       return evalYaml(elsePart, this);
     }
   }, 3);
-
   ['while'] = new SpecialForm(([condPart, bodyPart]: AST[]) => {
     let result = undefined;
     while (!!evalYaml(condPart, this)) {
@@ -90,10 +126,15 @@ export class TopLevelScope extends Scope {
     (this as any)[varName as string] = value;
     return value;
   }, 2);
+  ['defun'] = new SpecialForm(([funcName, argList, body]: AST[]) => {
+    (this as any)[funcName as string] = new UserDefinedFunction(argList, body);
+    return body;
+  }, 2);
 }
 
 const callJSFunction = (funcName: string, args: AST[]) => {
   const programText = `"use strict";return ${funcName}(...args);`;
+  config.verbose && console.log(`programText = ${programText}`);
   return new Function('args', programText)(args);
 };
 
@@ -102,9 +143,9 @@ function applyFunction(funcName: string, arg: AST[], env: Scope) {
     console.log(
       `applyFunction funcName=${funcName}, arg=${JSON.stringify(
         arg
-      )}, env=${env}`
+      )}, env=${JSON.stringify(Object.keys(env))}`
     );
-  if (Object.keys(env).indexOf(funcName) !== -1) {
+  if (!!(env as any)[funcName]) {
     config.verbose && console.log(`[1]`);
     return (env as any)[funcName].apply(arg, env);
   } else {
@@ -113,13 +154,6 @@ function applyFunction(funcName: string, arg: AST[], env: Scope) {
     return callJSFunction(funcName, arg);
   }
   return undefined;
-}
-
-function evalArg(arg: AST | AST[], env: Scope) {
-  if (Array.isArray(arg)) {
-    return arg.map((elem) => evalYaml(elem, env));
-  }
-  return [evalYaml(arg, env)];
 }
 
 export function evalYaml(script: AST, env: Scope): AST {

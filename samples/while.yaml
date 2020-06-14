@@ -2,5 +2,5 @@
 - setq: ['i', 0]
 - while:
     - '<': [$i, 10]
-    - console.log: $i
-      setq: [i, '+': [$i, 1]]
+    - setq: [i, '+': [$i, 1]]
+- console.log: ['===': [$i, 10]]

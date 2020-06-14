@@ -1,0 +1,8 @@
+- defun:
+    - myplus
+    - [a, b]
+    - '*': [$a, $b]
+- console.log:
+    '===':
+      - myplus: [2, 3]
+      - 6
