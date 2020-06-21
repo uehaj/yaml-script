@@ -5,8 +5,8 @@ export type AST =
   | number
   | string
   | boolean
-  | { lhs: AST; rhs: AST }
   | AST[]
+  | { [funcName: string]: AST[] }
   | null;
 
 export function parseYamlString(yamlText: string): AST {
@@ -16,4 +16,15 @@ export function parseYamlString(yamlText: string): AST {
 export function parseYamlFile(filename: string): AST {
   const yamlText = fs.readFileSync(filename, 'utf8');
   return parseYamlString(yamlText);
+}
+
+export function isASTArray(params: AST): params is AST[] {
+  if (Array.isArray(params)) {
+    return true;
+  }
+  return false;
+}
+
+export function isASTNull(params: any): params is null {
+  return params === null;
 }

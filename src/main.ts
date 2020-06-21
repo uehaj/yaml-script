@@ -1,6 +1,7 @@
 import commandLineParser from 'commander';
 import { AST, parseYamlString, parseYamlFile } from './parser';
-import { TopLevelScope, evalYaml } from './interp';
+import { evalYaml } from './interp';
+import { TopLevelScope } from './function';
 import config from './config';
 
 function main(argv: string[]) {

@@ -1,8 +1,25 @@
 - defun:
     - myplus
     - [a, b]
-    - '*': [$a, $b]
+    - '+': [$a, $b]
+- defun:
+    - apply
+    - [op, a, b]
+    - $op: [$a, $b]
+
 - console.log:
     '===':
       - myplus: [2, 3]
+      - 5
+- console.log:
+    '===':
+      - apply: ['*', 2, 3]
       - 6
+- console.log:
+    '===':
+      - myplus: ['+': [4, 5], 3]
+      - 12
+- console.log:
+    '===':
+      - '+': ['+': [4, 5], 3]
+      - 12
