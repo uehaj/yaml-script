@@ -18,11 +18,18 @@ function main(argv: string[]) {
     .option('-v,--verbose', 'verbose output', () => {
       config.verbose = true;
     })
+    .option('-p,--perseOnly', 'parse and dump AST', () => {
+      config.parseOnly = true;
+    })
     .arguments('[file...]')
     .action((fileNames: string) => {
       for (const fileName of fileNames) {
         const program: AST = parseYamlFile(fileName);
-        evalYaml(program, env);
+        if (config.parseOnly) {
+          console.log(JSON.stringify(program, null, ' '));
+        } else {
+          evalYaml(program, env);
+        }
       }
     })
     .on('--help', function () {

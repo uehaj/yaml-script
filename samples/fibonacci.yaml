@@ -1,0 +1,14 @@
+- defun:
+    - fibonacci1
+    - [n]
+    - 'if':
+        - '||':
+            - '===': [$n, 0]
+            - '===': [$n, 1]
+        - $n
+        - '+':
+            - fibonacci1: ['-': [$n, 2]]
+            - fibonacci1: ['-': [$n, 1]]
+
+- console.log:
+    - '===': [fibonacci1: 10, 55]
