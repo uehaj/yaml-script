@@ -38,3 +38,9 @@ YAML script is a turing complete small programming language with a syntax based 
 - console.log:
     - fibonacci1: 10
 ```
+
+# How to run
+
+```
+yarn run start samples/fibonacci.yaml
+```
