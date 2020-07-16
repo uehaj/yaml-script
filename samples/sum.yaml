@@ -1,4 +1,4 @@
-- defun:
+- function:
     - sum
     - [a]
     - if:

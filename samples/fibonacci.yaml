@@ -1,4 +1,4 @@
-- defun:
+- function:
     - fibonacci1
     - [n]
     - 'if':
@@ -10,5 +10,23 @@
             - fibonacci1: ['-': [$n, 2]]
             - fibonacci1: ['-': [$n, 1]]
 
+- function:
+    - fibonacci2
+    - [n]
+    - let: [a, 1]
+    - let: [b, 0]
+    - let: [tmp, 0]
+    - let: [i, 0]
+    - while:
+        - '<': [$i, $n]
+        - let: [tmp, $a]
+        - let: [a, $b]
+        - let: [b, '+': [$tmp, $b]]
+        - let: [i, '+': [$i, 1]]
+    - $b
+
 - console.log:
     - '===': [fibonacci1: 10, 55]
+
+- console.log:
+    - '===': [fibonacci2: 10, 55]

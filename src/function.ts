@@ -108,31 +108,41 @@ export class TopLevelScope extends Scope {
     ([condPart, thenPart, elsePart]: AST[], env: Scope) => {
       const cond = evalYaml(condPart, env);
       config.verbose && console.log(`cond=${cond}`);
+      let result = undefined;
       if (!!cond) {
-        return evalYaml(thenPart, env);
+        result = evalYaml(thenPart, env);
       } else {
-        return evalYaml(elsePart, env);
+        result = evalYaml(elsePart, env);
       }
+      return result;
     },
     3
   );
-  ['while'] = new SpecialForm(([condPart, bodyPart]: AST[], env: Scope) => {
-    let result = undefined;
-    while (!!evalYaml(condPart, env)) {
-      result = evalYaml(bodyPart, env);
-    }
-    return null;
-  }, 2);
-  ['setq'] = new SpecialForm(([varName, exp]: AST[], env: Scope) => {
+  ['while'] = new SpecialForm(
+    ([condPart, ...bodiesPart]: AST[], env: Scope) => {
+      let result = undefined;
+      while (!!evalYaml(condPart, env)) {
+        bodiesPart.forEach((bodyPart) => {
+          result = evalYaml(bodyPart, env);
+        });
+      }
+      return null;
+    },
+    2
+  );
+  ['let'] = new SpecialForm(([varName, exp]: AST[], env: Scope) => {
     const value = evalYaml(exp, env);
     (this as any)[varName as string] = value;
     return value;
   }, 2);
-  ['defun'] = new SpecialForm(
-    ([funcName, argList, body]: AST[], env: Scope) => {
+  ['function'] = new SpecialForm(
+    ([funcName, argList, ...body]: AST[], env: Scope) => {
       (env as any)[funcName as string] = new UserDefinedFunction(argList, body);
       return body;
     },
-    2
+    3
   );
+  ['list'] = new SpecialForm(([...elements]: AST[], env: Scope) => {
+    return elements;
+  }, 1);
 }

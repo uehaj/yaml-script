@@ -1,8 +1,8 @@
-- defun:
+- function:
     - myplus
     - [a, b]
     - '+': [$a, $b]
-- defun:
+- function:
     - apply
     - [op, a, b]
     - $op: [$a, $b]

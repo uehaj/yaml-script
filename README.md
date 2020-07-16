@@ -7,7 +7,7 @@ YAML script is a turing complete small programming language with a syntax based 
 ```yaml
 - [if: ['<': [1, 2], ['console.log': 'PASS']]]
 - [if: ['>': [1, 2], ['console.log': 'FAILURE'], ['console.log': 'PASS']]]
-- defun:
+- function:
     - sum
     - [a]
     - if:
@@ -21,7 +21,7 @@ YAML script is a turing complete small programming language with a syntax based 
 # Sample code: fibonacci number
 
 ```yaml
-- defun:
+- function:
     - fibonacci1
     - [n]
     - 'if':

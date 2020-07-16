@@ -5,7 +5,12 @@ export class Scope {}
 export class YamlScriptError extends Error {}
 
 const callJSFunction = (funcName: string, args: AST[]) => {
-  const programText = `"use strict";return ${funcName}(...args);`;
+  let programText;
+  if (funcName.startsWith('.')) {
+    programText = `"use strict";return (typeof(args[0]${funcName}) === 'function')?args[0]${funcName}(...(args.slice(1))):args[0]${funcName};`;
+  } else {
+    programText = `"use strict";return ${funcName}(...args);`;
+  }
   config.verbose && console.log(`programText = ${programText}`);
   return new Function('args', programText)(args);
 };
@@ -22,13 +27,14 @@ function applyFunction(funcName: string, arg: AST[], env: Scope) {
     const evalueted = evalYaml(funcName, env);
     if (typeof evalueted === 'string') {
       funcName = evalueted;
+    } else {
+      throw new YamlScriptError(`Function \$${funcName} undefined.`);
     }
   }
   if (!!(env as any)[funcName]) {
-    config.verbose && console.log(`[1]`);
     return (env as any)[funcName].applyFunc(arg, env);
   } else {
-    config.verbose && console.log(`[2] ${funcName}, ${typeof arg}`);
+    config.verbose && console.log(`${funcName}, ${typeof arg}`);
     arg = arg.map((elm) => evalYaml(elm, env));
     return callJSFunction(funcName, arg);
   }
@@ -67,9 +73,9 @@ export function evalYaml(script: AST, env: Scope): AST {
     for (const key of Object.keys(script)) {
       let arg = (script as any)[key];
       if (!Array.isArray(arg)) {
+        // {k1: <premitive>} ==> k1([<premitive>])
         arg = [arg];
       }
-      //      const aruguments = arg.map((e: AST) => evalYaml(e, env));
       result = applyFunction(key, arg, env);
     }
   }

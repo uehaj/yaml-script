@@ -1,0 +1,12 @@
+- console.log:
+    '===':
+      - '.toUpperCase': 'aBc'
+      - 'ABC'
+- console.log:
+    '===':
+      - '.length': 'aBc'
+      - 3
+- console.log:
+    '===':
+      - '.substring': ['aBcDeF', 1, 3]
+      - 'Bc'
